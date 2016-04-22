@@ -1,29 +1,33 @@
 import card.Card
 import deck.DeckFactory
+import hand.Hand
 import player.Warrior
 
 /**
  * Created by msimpson on 4/20/16.
  */
 class WarriorTest extends GroovyTestCase {
-    Warrior genghis = new Warrior("genghis");
-    Queue<Card> hand = genghis.getHand();;
-    ArrayList<Card> deck = DeckFactory.makeDeck();
-    ArrayList<Card> topThree =  new ArrayList<>();;
+    Warrior genghis;
+    Hand hand;
+    ArrayList<Card> deck;
+    ArrayList<Card> topThree;
     Card handCard;
 
 
     void setUp() {
         super.setUp()
-        testDepleteHand();
+        genghis = new Warrior("genghis");
+        hand = genghis.getHand();
+        deck = DeckFactory.makeDeck();
+        topThree = new ArrayList<>();
         topThree.add(deck.get(0));
         topThree.add(deck.get(1));
         topThree.add(deck.get(2));
     }
 
     void testGetTopCard() {
-        hand.add(deck.get(0));
-        hand.add(deck.get(1));
+        hand.addCard(deck.get(0));
+        hand.addCard(deck.get(1));
         //hand exhibits queue behavior
         assertEquals(true, genghis.getTopCard().equals(deck.get(0)));
         assertEquals(true, genghis.getTopCard().equals(deck.get(1)));
@@ -31,7 +35,7 @@ class WarriorTest extends GroovyTestCase {
 
     void testPlaceAtBottom() {
         //add the fourth card in the deck to the hand
-        hand.add(deck.get(3));
+        hand.addCard(deck.get(3));
         //place top three cards at bottom of the hand
         genghis.placeAtBottom(topThree);
         //Cards come out ordered 4th, 1st, 2nd, 3rd
@@ -42,9 +46,9 @@ class WarriorTest extends GroovyTestCase {
     }
 
     void testGetHand() {
-        hand.add(topThree.get(0));
-        hand.add(topThree.get(1));
-        hand.add(topThree.get(2));
+        hand.addCard(topThree.get(0));
+        hand.addCard(topThree.get(1));
+        hand.addCard(topThree.get(2));
 
         for(int i = 0; i < 3; ++i) {
             handCard = genghis.getTopCard();
