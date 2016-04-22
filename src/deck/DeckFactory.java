@@ -11,10 +11,10 @@ public class DeckFactory {
   public static ArrayList<Card> makeDeck(){
     int value = 2;
     int suit = 0;
-    int length = Main.DECK_SIZE;
+    int length = 52;
     ArrayList<Card> deck = new ArrayList<>();
     for(int i = 0; i < length; ++i ) {
-      // generates one of each suit per value
+      // generates one card of each suit per value
       switch (suit %= 4) {
         case 0:
           deck.add(new Heart(value));

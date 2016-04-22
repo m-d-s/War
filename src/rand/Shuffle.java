@@ -1,3 +1,5 @@
+package rand;
+
 import card.Card;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class Shuffle {
     return instance;
   }
 
-  protected void shuffle(ArrayList<Card> cards) {
+  public void shuffle(ArrayList<Card> cards) {
     int swap;
     Card temp;
     // Fisher–Yates shuffle

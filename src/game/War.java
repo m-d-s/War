@@ -1,8 +1,10 @@
 package game;
 
+
 import card.Card;
-import game.GameType;
 import hand.Hand;
+import player.Warrior;
+import rand.Shuffle;
 
 import java.util.ArrayList;
 import java.io.BufferedReader;
@@ -96,7 +98,7 @@ public class War implements GameType {
 
   private void deal(ArrayList<Card> deck) {
     boolean which = true;
-    int length = Main.DECK_SIZE;
+    int length = 52;
     Hand p1Hand = this.p1.getHand(),
                 p2Hand = this.p2.getHand();
     // loop through the deck adding cards to alternating hands
