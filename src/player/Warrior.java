@@ -1,4 +1,7 @@
+package player;
+
 import card.Card;
+import hand.WarHand;
 
 import java.util.ArrayList;
 
@@ -8,17 +11,17 @@ import java.util.ArrayList;
 public class Warrior extends Player<Warrior> {
 
   public Warrior(String name) {
-    super(name);
+    super(name, new WarHand());
   }
 
   public Card getTopCard() {
-    return this.hand.poll();
+    return this.hand.removeCard();
   }
 
   public void placeAtBottom(ArrayList<Card> winnings) {
     int length = winnings.size();
     for(int i = 0; i < length; ++i) {
-      this.hand.add(winnings.remove(0));
+      this.hand.addCard(winnings.remove(0));
     }
   }
 }

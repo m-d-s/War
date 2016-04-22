@@ -1,6 +1,6 @@
-import card.Card;
-import java.util.LinkedList;
-import java.util.Queue;
+package player;
+
+import hand.Hand;
 
 /**
  * Created by msimpson on 4/17/16.
@@ -8,14 +8,14 @@ import java.util.Queue;
 public abstract class Player<T extends Player> {
 
   private String name;
-  protected Queue<Card> hand;
+  protected Hand hand;
 
-  public Player(String name){
+  public Player(String name, Hand hand){
     this.name = name;
-    this.hand = new LinkedList<>();
+    this.hand = hand;
   }
 
-  public Queue<Card> getHand() {
+  public Hand getHand() {
     return this.hand;
   }
 
@@ -24,7 +24,7 @@ public abstract class Player<T extends Player> {
   }
 
   public boolean hasCards() {
-    return !hand.isEmpty();
+    return !this.hand.isEmpty();
   }
 
   public int handSize() {
@@ -32,8 +32,9 @@ public abstract class Player<T extends Player> {
   }
 
   public void depleteHand() {
-    while(!hand.isEmpty()) {
-      hand.poll();
+    while(!this.hand.isEmpty()) {
+      this.hand.removeCard();
     }
   }
+
 }

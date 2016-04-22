@@ -1,7 +1,10 @@
+package game;
+
 import card.Card;
+import game.GameType;
+import hand.Hand;
 
 import java.util.ArrayList;
-import java.util.Queue;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -94,14 +97,14 @@ public class War implements GameType {
   private void deal(ArrayList<Card> deck) {
     boolean which = true;
     int length = Main.DECK_SIZE;
-    Queue<Card> p1Hand = this.p1.getHand(),
+    Hand p1Hand = this.p1.getHand(),
                 p2Hand = this.p2.getHand();
     // loop through the deck adding cards to alternating hands
     for(int i = 0; i < length; ++i) {
       if(which) {
-        p1Hand.add(deck.get(i));
+        p1Hand.addCard(deck.get(i));
       } else {
-        p2Hand.add(deck.get(i));
+        p2Hand.addCard(deck.get(i));
       }
       which = !which;
     }
@@ -113,10 +116,10 @@ public class War implements GameType {
       BufferedReader br =
           new BufferedReader(new InputStreamReader(System.in));
 
-      System.out.println("Player 1, enter your name: ");
+      System.out.println("player.Player 1, enter your name: ");
       names[0] = br.readLine();
 
-      System.out.println("Player 2, enter your name: ");
+      System.out.println("player.Player 2, enter your name: ");
       names[1] = br.readLine();
     }catch(IOException io){
       io.printStackTrace();

@@ -1,3 +1,5 @@
+package game;
+
 import card.Card;
 
 import java.util.ArrayList;

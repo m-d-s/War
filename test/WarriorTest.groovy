@@ -1,22 +1,21 @@
 import card.Card
+import deck.DeckFactory
+import player.Warrior
 
 /**
  * Created by msimpson on 4/20/16.
  */
 class WarriorTest extends GroovyTestCase {
-    Warrior genghis;
-    Queue<Card> hand;
-    ArrayList<Card> deck;
-    ArrayList<Card> topThree;
+    Warrior genghis = new Warrior("genghis");
+    Queue<Card> hand = genghis.getHand();;
+    ArrayList<Card> deck = DeckFactory.makeDeck();
+    ArrayList<Card> topThree =  new ArrayList<>();;
     Card handCard;
 
 
     void setUp() {
         super.setUp()
-        genghis = new Warrior("genghis");
-        hand = genghis.getHand();
-        deck = DeckFactory.makeDeck();
-        topThree = new ArrayList<>();
+        testDepleteHand();
         topThree.add(deck.get(0));
         topThree.add(deck.get(1));
         topThree.add(deck.get(2));
