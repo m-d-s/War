@@ -1,6 +1,6 @@
 package deck;
 
-import card.*;
+import card.Card;
 
 import java.util.ArrayList;
 
@@ -8,29 +8,19 @@ import java.util.ArrayList;
  * Created by msimpson on 4/20/16.
  */
 public class DeckFactory {
-  public static ArrayList<Card> makeDeck(){
-    int value = 2;
-    int suit = 0;
-    int length = 52;
+  public static ArrayList<Card> makeDeck(int suitCt, int rankCount){
+    int rank = 0,
+        suit = 0,
+        length = suitCt * rankCount;
     ArrayList<Card> deck = new ArrayList<>();
+    // generates one card of each suit per value
     for(int i = 0; i < length; ++i ) {
-      // generates one card of each suit per value
-      switch (suit %= 4) {
-        case 0:
-          deck.add(new Heart(value));
-          break;
-        case 1:
-          deck.add(new Club(value));
-          break;
-        case 2:
-          deck.add(new Spade(value));
-          break;
-        case 3:
-          deck.add(new Diamond(value));
+      deck.add(new Card(suit, rank));
+      // if all cards of a given suit have been created
+      if(++rank == suitCt) {
+        suit++;
+        rank = 0;
       }
-      // increment value if all suits have been generated
-      if(suit % 4 == 3) value++;
-      suit++;
     }
     return deck;
   }

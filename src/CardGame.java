@@ -13,7 +13,7 @@ public class CardGame {
   private GameType theGame;
 
   public CardGame(GameType game) {
-    this.deck = DeckFactory.makeDeck();
+    this.deck = DeckFactory.makeDeck(4, 13);
     this.theGame = game;
   }
 

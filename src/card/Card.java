@@ -1,16 +1,10 @@
 package card;
 
-public abstract class Card {
+public class Card {
   public int value;
-  public Card(int value) {
+  public int suit;
+  public Card(int value, int suit) {
     this.value = value;
-  }
-
-  public boolean equals(Card other) {
-    return this.value == other.value;
-  }
-
-  public boolean gt(Card other) {
-    return this.value > other.value;
+    this.suit = suit;
   }
 }

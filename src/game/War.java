@@ -68,14 +68,14 @@ public class War implements GameType {
     p2Card = this.p2.getTopCard();
     loot.add(p1Card);
     loot.add(p2Card);
-    if(p1Card.equals(p2Card)) {
+    if(p1Card.value == p2Card.value) {
       if(this.p1.hasCards() && this.p2.hasCards()) {
         return this.war(loot);
       } else {
         p1WinsLoot = this.p1.hasCards();
       }
     } else {
-      p1WinsLoot = p1Card.gt(p2Card);
+      p1WinsLoot = p1Card.value > p2Card.value;
     }
     return p1WinsLoot;
   }
@@ -95,7 +95,7 @@ public class War implements GameType {
   private void deal(ArrayList<Card> deck) {
     boolean which = true;
     Hand p1Hand = this.p1.getHand(),
-                p2Hand = this.p2.getHand();
+         p2Hand = this.p2.getHand();
     // loop through the deck adding cards to alternating hands
     for(Card next : deck) {
       if(which) {

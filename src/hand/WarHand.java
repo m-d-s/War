@@ -1,7 +1,6 @@
 package hand;
 
 import card.Card;
-import card.Heart;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -15,6 +14,7 @@ public class WarHand implements Hand {
   public WarHand() {
     hand = new LinkedList<>();
   }
+
   public void addCard(Card toAdd) {
     hand.add(toAdd);
   }
@@ -26,6 +26,7 @@ public class WarHand implements Hand {
   public boolean isEmpty() {
     return hand.isEmpty();
   }
+
   public int size() {
     return hand.size();
   }
