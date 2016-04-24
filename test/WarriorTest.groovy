@@ -1,48 +1,55 @@
 import card.Card
-
+import deck.FrenchDeckNoJkrs
 import hand.Hand
 import player.Warrior
+import deck.*
 
 /**
  * Created by msimpson on 4/20/16.
  */
 class WarriorTest extends GroovyTestCase {
-    Warrior genghis;
     Hand hand;
-    ArrayList<Card> deck;
-    ArrayList<Card> topThree;
+    Deck deck;
     Card handCard;
-
+    Warrior genghis;
+    ArrayList<Card> topThree;
 
     void setUp() {
         super.setUp()
-        genghis = new Warrior("genghis");
-        hand = genghis.getHand();
-        deck = DeckFactory.makeDeck();
+        genghis  = new Warrior("genghis");
+        deck     = new FrenchDeckNoJkrs();
+        hand     = genghis.getHand();
         topThree = new ArrayList<>();
-        topThree.add(deck.get(0));
-        topThree.add(deck.get(1));
-        topThree.add(deck.get(2));
+
+        deck.create(4,13);
+        topThree.add(deck.deal());
+        topThree.add(deck.deal());
+        topThree.add(deck.deal());
     }
 
     void testGetTopCard() {
-        hand.addCard(deck.get(0));
-        hand.addCard(deck.get(1));
+        Card first  = deck.deal(),
+             second = deck.deal();
+        hand.addCard(first);
+        hand.addCard(second);
         //hand exhibits queue behavior
-        assertEquals(true, genghis.getTopCard().equals(deck.get(0)));
-        assertEquals(true, genghis.getTopCard().equals(deck.get(1)));
+        assertEquals(true, genghis.getTopCard().equals(first));
+        assertEquals(true, genghis.getTopCard().equals(second));
     }
 
     void testPlaceAtBottom() {
+        Card first  = topThree.remove(0),
+             second = topThree.get(0),
+             third  = topThree.get(1);
+
         //add the fourth card in the deck to the hand
-        hand.addCard(deck.get(3));
+        hand.addCard(first);
         //place top three cards at bottom of the hand
         genghis.placeAtBottom(topThree);
         //Cards come out ordered 4th, 1st, 2nd, 3rd
-        assertEquals(true, genghis.getTopCard().equals(deck.get(3)));
-        assertEquals(true, genghis.getTopCard().equals(deck.get(0)));
-        assertEquals(true, genghis.getTopCard().equals(deck.get(1)));
-        assertEquals(true, genghis.getTopCard().equals(deck.get(2)));
+        assertEquals(true, genghis.getTopCard().equals(first));
+        assertEquals(true, genghis.getTopCard().equals(second));
+        assertEquals(true, genghis.getTopCard().equals(third));
     }
 
     void testGetHand() {
@@ -74,7 +81,7 @@ class WarriorTest extends GroovyTestCase {
     }
 
     void testDepleteHand() {
-        genghis.placeAtBottom(deck);
+        genghis.placeAtBottom(topThree);
         assertEquals(false, hand.isEmpty());
         genghis.depleteHand();
         assertEquals(true, hand.isEmpty());
