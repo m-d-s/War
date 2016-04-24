@@ -43,4 +43,14 @@ public class Warrior extends Player<Warrior> {
       this.hand.addCard(winnings.remove(0));
     }
   }
+
+  /**
+   * Adds a card to the hand with no side effects to
+   * the source of the card
+   * @param toAdd
+   *    the card to add to the hand
+   */
+  public void addCard(Card toAdd) {
+    this.hand.addCard(toAdd);
+  }
 }

@@ -1,3 +1,5 @@
+import deck.DeckFactory;
+import game.GameType;
 import game.War;
 
 import java.io.BufferedReader;
@@ -6,7 +8,7 @@ import java.io.InputStreamReader;
 
 public class Main {
   public static void main(String[] args) {
-    CardGame war = new CardGame(new War());
+    GameType war = new War(2,4,13);
     boolean playAgain = false;
     BufferedReader br =
         new BufferedReader(new InputStreamReader(System.in));

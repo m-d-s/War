@@ -2,11 +2,14 @@ package game;
 
 
 import card.Card;
+import deck.DeckFactory;
 import hand.Hand;
 import player.Warrior;
 import rand.Shuffle;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,111 +19,133 @@ import java.io.InputStreamReader;
  */
 public class War implements GameType {
 
-  private Warrior p1;
-  private Warrior p2;
+  private ArrayList<Warrior> players;
+  private ArrayList<Warrior> contenders;
   private Shuffle jumbler;
+  private ArrayList<Card> deck;
 
-  public War() {
-    String[] names = getPlayerNames();
+  public War(int numberOfPlayers, int numberOfSuits, int numberOfRanks) {
+    this.players = new ArrayList<>();
+    this.contenders = new ArrayList<>();
+    this.deck = DeckFactory.makeDeck(numberOfSuits,numberOfRanks);
     this.jumbler = Shuffle.getInstance();
-    this.p1 = new Warrior(names[0]);
-    this.p2 = new Warrior(names[1]);
+    for(int i = 0; i < numberOfPlayers; ++i) {
+      this.players.add(new Warrior("Player " + i));
+    }
   }
 
-  public void play(ArrayList<Card> deck) {
+  public void play() {
     ArrayList<Card> loot = new ArrayList<>();
-    boolean which;
-    String winner;
-
+    boolean victory = false;
     this.jumbler.shuffle(deck);
-    this.deal(deck);
+    this.deal();
 
-    while(p1.hasCards() && p2.hasCards()) {
+    while(!victory) {
       assert loot.isEmpty();
-      which = flip(loot);
-      this.jumbler.shuffle(loot);
-      if(which) {
-        this.p1.placeAtBottom(loot);
+      assert contenders.isEmpty();
+      this.addPlayersToContenders();
+      if(this.contenders.size() > 1) {
+        this.round();
       } else {
-        this.p2.placeAtBottom(loot);
+        victory = true;
       }
     }
-
-    winner = p1.hasCards() ? p1.getName() : p2.getName();
-    System.out.println(winner + " is the winner!");
+    System.out.println(contenders.get(0).getName() + " is the winner!");
   }
 
-  public void rematch(ArrayList<Card> deck) {
-    Warrior temp = this.p1;
-    //Swap players so that the first dealt gets toggled
-    this.p1 = this.p2;
-    this.p2 = temp;
-    // empty the players hands
-    this.p1.depleteHand();
-    this.p2.depleteHand();
-    this.play(deck);
+  public void rematch() {
+    Collections.rotate(players,1);
+    for(Warrior player : players) {
+      player.depleteHand();
+    }
+    //remove the winner of the last game
+    this.contenders.remove(0);
+    this.play();
   }
 
-  private boolean flip(ArrayList<Card> loot) {
-    Card p1Card, p2Card;
-    boolean p1WinsLoot;
-    p1Card = this.p1.getTopCard();
-    p2Card = this.p2.getTopCard();
-    loot.add(p1Card);
-    loot.add(p2Card);
-    if(p1Card.value == p2Card.value) {
-      if(this.p1.hasCards() && this.p2.hasCards()) {
-        return this.war(loot);
-      } else {
-        p1WinsLoot = this.p1.hasCards();
+  private void round() {
+    ArrayList<Card> loot = new ArrayList<>();
+
+    this.flipAndCompare(loot);
+    // a victor for the round has been declared
+    jumbler.shuffle(loot);
+    this.contenders.get(0).placeAtBottom(loot);
+    //remove the last contender before the next round
+    this.contenders.remove(0);
+  }
+
+  private void flipAndCompare(ArrayList<Card> loot) {
+    Card addToLoot;
+    int value,
+        max = -1,
+        numContenders = this.contenders.size();
+    //loop through the remaining contenders
+    for(int i = 0; i < numContenders; ++i) {
+      addToLoot = this.contenders.get(i).getTopCard();
+      value = addToLoot.value;
+      //if their cards value is greater than or equal to
+      if(max != value) {
+        if(max < value) {
+          // reset max value
+          max = value;
+          //remove any previous contenders
+          for(int j = 0; j < i; j++) {
+            this.contenders.remove(0);
+            i--;
+          }
+        } else {
+          //contender is no longer in the running for this round
+          this.contenders.remove(i);
+          i--;
+        }
+        //update remaining contenders as some may have been evicted
+        numContenders = this.contenders.size();
       }
-    } else {
-      p1WinsLoot = p1Card.value > p2Card.value;
+      //add players card to the loot
+      loot.add(addToLoot);
     }
-    return p1WinsLoot;
+    if(this.contenders.size() > 1) {
+      // if more than one player remains, a war needs to occur
+      this.war(loot);
+    }
   }
 
-  private boolean war(ArrayList<Card> loot) {
-    int p1handSize = this.p1.handSize(),
-        p2HandSize = this.p2.handSize();
-    for(int i = 0; i < 2 && p1handSize > 1 && p2HandSize > 1; ++i) {
-      loot.add(this.p1.getTopCard());
-      loot.add(this.p2.getTopCard());
-      p1handSize--;
-      p2HandSize--;
+  private void war(ArrayList<Card> loot) {
+    Warrior temp;
+    int length = this.contenders.size();
+    //loop through all available players
+    for(int i = 0; i < length; ++i) {
+      temp = this.contenders.get(i);
+      //each player must sacrifice three cards during a war
+      for(int j = 0; j < 2; ++j) {
+        if(temp.hasCards()) { loot.add(temp.getTopCard()); }
+      }
+      //if they player ran out of cards, they automatically lose
+      //and are evicted from the player pool
+      if(!temp.hasCards()) {
+        this.contenders.remove(i--);
+        length--;
+      }
     }
-    return flip(loot);
+    // continue round by calling flip and passing current loot
+    // all players are guaranteed to have at least one card in their hand
+    this.flipAndCompare(loot);
   }
 
-  private void deal(ArrayList<Card> deck) {
-    boolean which = true;
-    Hand p1Hand = this.p1.getHand(),
-         p2Hand = this.p2.getHand();
+  private void deal() {
+    int which = 0;
+    int numPlayers = players.size();
     // loop through the deck adding cards to alternating hands
-    for(Card next : deck) {
-      if(which) {
-        p1Hand.addCard(next);
-      } else {
-        p2Hand.addCard(next);
-      }
-      which = !which;
+    for(Card next : this.deck) {
+      which %= numPlayers;
+      this.players.get(which).addCard(next);
+      which++;
     }
   }
 
-  private String[] getPlayerNames() {
-    String[] names = new String[2];
-    try{
-      BufferedReader br =
-          new BufferedReader(new InputStreamReader(System.in));
-
-      System.out.println("player.Player 1, enter your name: ");
-      names[0] = br.readLine();
-
-      System.out.println("player.Player 2, enter your name: ");
-      names[1] = br.readLine();
-    }catch(IOException io){
-      io.printStackTrace();
-    }
-    return names;
+  private void addPlayersToContenders() {
+    this.contenders = this.players.stream()
+                                  .filter(player -> player.hasCards())
+                                  .collect(Collectors.toCollection(ArrayList::new));
   }
 }
