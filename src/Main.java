@@ -1,4 +1,3 @@
-import deck.DeckFactory;
 import game.GameType;
 import game.War;
 
