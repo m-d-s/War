@@ -18,6 +18,14 @@ public class FrenchDeckNoJkrs implements Deck {
     deck = new ArrayList<>();
     jumbler = Shuffle.getInstance();
   }
+
+  /* for testing purposes*/
+  public FrenchDeckNoJkrs(ArrayList deck) {
+    this.pos = 0;
+    this.deck = deck;
+    jumbler = Shuffle.getInstance();
+  }
+
   /* Create the deck of cards */
   public void create( int numberOfSuits, int numberOfRanks ) {
     int rank = 0,

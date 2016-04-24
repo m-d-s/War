@@ -3,6 +3,7 @@ package rand;
 import card.Card;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -27,13 +28,10 @@ public class Shuffle {
 
   public void shuffle(ArrayList<Card> cards) {
     int swap;
-    Card temp;
-    // Fisher–Yates shuffle
+    // Knuth-Fisher–Yates shuffle
     for(int i = cards.size() - 1; i > 0; --i) {
       swap = rnd.nextInt(i+1);
-      temp = cards.get(i);
-      cards.set(i, cards.get(swap));
-      cards.set(swap, temp);
+      Collections.swap(cards, i, swap);
     }
   }
 }
