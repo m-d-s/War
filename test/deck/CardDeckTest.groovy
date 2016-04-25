@@ -31,7 +31,7 @@ class CardDeckTest extends GroovyTestCase {
         assertEquals(true, this.cards.size() == numSuits * numRanks);
 
         for(Card card : cards) {
-            accounted[card.suit][card.value] = true;
+            accounted[card.suit][card.rank] = true;
         }
 
         for(int i = 0; i < numSuits; ++i) {

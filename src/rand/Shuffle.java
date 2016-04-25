@@ -7,7 +7,9 @@ import java.util.Collections;
 import java.util.Random;
 
 /**
- * Created by msimpson on 4/19/16.
+ * Shuffle is a class that offers singleton access to
+ * a random number generator for the purposes of shuffling
+ * lists of cards
  */
 public class Shuffle {
 
@@ -26,6 +28,11 @@ public class Shuffle {
     return instance;
   }
 
+  /**
+   * shuffle the contents of the given list of cards
+   * @param cards
+   *    output param, shuffled list
+   */
   public void shuffle(ArrayList<Card> cards) {
     int swap;
     // Knuth-Fisher–Yates shuffle

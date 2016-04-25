@@ -1,50 +1,52 @@
 package game;
 
-
 import card.Card;
 import deck.Deck;
 import deck.CardDeck;
 import player.Warrior;
 import rand.Shuffle;
+import validator.Validator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
- * Created by msimpson on 4/18/16.
+ * War is the main driver class for the program. It contains the main execution loop of
+ * the game, and is composed of structures and behaviors that are definitive to the game.
  */
 public class War implements GameType {
-
-  private ArrayList<Warrior> players;
-  private ArrayList<Warrior> contenders;
-  private Shuffle jumbler;
   private Deck deck;
   private int numSuits;
   private int numRanks;
+  private Shuffle jumbler;
+  private ArrayList<Warrior> players;
+  private ArrayList<Warrior> contenders;
 
-  /* for testing purposes */
-  private final boolean doShuffle;
-  private final boolean outputOn;
   /* for testing purposes */
   private boolean[] winTracker;
+  /* for testing purposes */
+  private final boolean outputOn;
+  /* for testing purposes */
+  private final boolean doShuffle;
 
-
-  public War(int numberOfPlayers, int numberOfSuits, int numberOfRanks) {
+  public War(int numPlayers, int numSuits, int numRanks) {
     this.doShuffle  = true;
     this.winTracker = null;
-    this.outputOn   = false;
-    this.numSuits   = numberOfSuits;
-    this.numRanks   = numberOfRanks;
+    this.outputOn   = true;
     this.deck       = new CardDeck();
     this.contenders = new ArrayList<>();
     this.jumbler    = Shuffle.getInstance();
-
-    this.initPlayers(numberOfPlayers);
-    this.deck.create(numberOfSuits, numberOfRanks);
+    this.numSuits   = Validator.positiveDigit(numSuits,
+                                              "Please enter a positive integer value for the number of suits");
+    this.numRanks   = Validator.positiveDigit(numRanks,
+                                              "Please enter a positive integer value for the number of ranks");
+    this.initPlayers( Validator.positiveDigit(numPlayers,
+                                              "Please enter a positive integer value for the number of players"));
+    this.deck.create(this.numSuits, this.numRanks);
   }
 
-  /* For testing purposes */
+  /* for testing purposes */
   public War(Deck deck, int numPlayers, int numSuits, int numRanks, boolean doShuffle, boolean[] winTracker) {
     this.deck       = deck;
     this.outputOn   = false;
@@ -58,23 +60,32 @@ public class War implements GameType {
     this.initPlayers(numPlayers);
   }
 
+  /**
+   * play gets called once to play the first game, after that all subsequent games must
+   * be played through rematch
+   */
   public void play() {
     String winner;
     this.clearWinTable();
     if(this.doShuffle) { this.deck.shuffle(); }
     this.deal();
     this.gamePlay();
-    if(contenders.isEmpty()) {
-      System.out.print("Game ended in a tie");
+    if(this.contenders.isEmpty()) {
+      if(this.outputOn) { System.out.print("Game ended in a tie"); }
     } else {
-      winner = contenders.get(0).getName();
-      if(outputOn) { System.out.println(winner + " is the winner!"); }
-      if(winTracker != null) {
-        winTracker[Integer.parseInt(winner.replaceAll("\\D+",""))] = true;
+      winner = this.contenders.get(0).getName();
+      if(this.outputOn) { System.out.println(winner + " is the winner!"); }
+      if(this.winTracker != null) {
+        this.winTracker[Integer.parseInt(winner.replaceAll("\\D+",""))] = true;
       }
     }
   }
 
+  /**
+   * rematch can be called to play any number of matches after the initial call to play.
+   * It resets the game to a known starting state with all player hands empty, and
+   * the player list completely rotated by one position.
+   */
   public void rematch() {
     /* rotate players to cycle first dealt */
     Collections.rotate(players,1);
@@ -85,6 +96,9 @@ public class War implements GameType {
     this.play();
   }
 
+  /**
+   * clearWinTable resets the testing boolean table to all false values
+   */
   private void clearWinTable() {
     int length;
     boolean[] table = this.winTracker;
@@ -96,14 +110,21 @@ public class War implements GameType {
     }
   }
 
+  /**
+   * deal distributes cards to players one at a time in a clockwise fashion
+   * until the deck entire deck has been dealt
+   */
   private void deal() {
-    int which = 0;
-    int numPlayers = players.size();
-    int numCards = this.numRanks * this.numSuits;
-    /* loop through the deck adding cards to alternating hands */
+    Deck deck = this.deck;
+    ArrayList<Warrior> players = this.players;
+    int which      = 0,
+        numPlayers = players.size(),
+        numCards   = this.numRanks * this.numSuits;
+
+    /* loop through the deck adding cards to cycling player hands */
     for(int i = 0; i < numCards; ++i) {
       which %= numPlayers;
-      this.players.get(which).addCard(this.deck.deal());
+      players.get(which).addCard(deck.deal());
       which++;
     }
   }
@@ -114,19 +135,29 @@ public class War implements GameType {
                           .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   * flipAndCompare contains the core logic of the game. Each player removes
+   * a card from their hand and adds it to the loot. If one player's card had
+   * the greatest value, that player wins the round and claims the loot. If
+   * there are more than one players, a call to war gets made that will
+   * indirectly recurse back. This method assumes that all players within
+   * the contenders list have at least one card
+   * @param loot
+   */
   private void flipAndCompare(ArrayList<Card> loot) {
     Card addToLoot;
-    int value,
+    int rank,
         max = -1,
         numContenders = this.contenders.size();
 
     /* loop through the remaining contenders */
     for(int i = 0; i < numContenders; ++i) {
       addToLoot = this.contenders.get(i).getTopCard();
-      value = addToLoot.value;
-      if(max != value) {
-        if(max < value) {
-          max = value;
+      rank = addToLoot.rank;
+      if(max != rank) {
+        if(max < rank) {
+          /* set new maximum value */
+          max = rank;
           /* remove any previous contenders */
           for(int j = 0; j < i; j++) {
             this.contenders.remove(0);
@@ -148,6 +179,10 @@ public class War implements GameType {
     }
   }
 
+  /**
+   * gamePlay is a small utility loop that keeps the game going until
+   * there is one or zero contenders remaining
+   */
   private void gamePlay() {
     boolean victory = false;
     while(!victory) {
@@ -160,26 +195,43 @@ public class War implements GameType {
     }
   }
 
+  /**
+   * initPlayers initializes and added the required number of players to
+   * the players list
+   * @param numPlayers
+   *    total number of players to initialize
+   */
   private void initPlayers(int numPlayers) {
-    this.players = new ArrayList<>();
+    ArrayList<Warrior> players = new ArrayList<>();
     for(int i = 0; i < numPlayers; ++i) {
-      this.players.add(new Warrior("Player " + i));
+      players.add(new Warrior("Player " + i));
     }
+    this.players = players;
   }
 
+  /**
+   * round encapsulates all of the behavior that represents a single
+   * full cycle of play during a game
+   */
   private void round() {
+    /* loot contains all of the cards that will be claimed by the round winner */
     ArrayList<Card> loot = new ArrayList<>();
 
     /* begin laying down cards */
     this.flipAndCompare(loot);
-    /* a victor for the round has been declared */
+    /* shuffle the loot before being claimed by the winning player */
     jumbler.shuffle(loot);
     if(!this.contenders.isEmpty()) {
       this.contenders.get(0).placeAtBottom(loot);
     }
-
   }
 
+  /**
+   * war simply deposits three cards from each remaining contender into the
+   * loot. If any player has no cards left as a result, they are ejected
+   * from the contenders. Finally, a call is made back to flipAndCompare
+   * @param loot
+   */
   private void war(ArrayList<Card> loot) {
     Warrior temp;
     int length = this.contenders.size();

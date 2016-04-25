@@ -3,10 +3,10 @@ package player;
 import hand.Hand;
 
 /**
- * Created by msimpson on 4/17/16.
+ * Player is an abstract class that defines the essential
+ * attributes and behaviors of a card player
  */
 public abstract class Player<T extends Player> {
-
   private String name;
   protected Hand hand;
 
@@ -15,6 +15,9 @@ public abstract class Player<T extends Player> {
     this.hand = hand;
   }
 
+  /**
+   * depleteHand removes all cards from a player's hand
+   */
   public void depleteHand() {
     while(!this.hand.isEmpty()) {
       this.hand.removeCard();

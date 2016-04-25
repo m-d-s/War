@@ -6,7 +6,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Created by msimpson on 4/21/16.
+ * WarHand defines the structures and behavior that is
+ * unique to a hand of cards in the game war. I didn't use
+ * a Deck for a player's hand because I saw enough unique
+ * functionality that it didn't make sense to force a
+ * Hand to be a Deck. I also thought it may be useful
+ * if more games were developed in the future.
  */
 public class WarHand implements Hand {
   private Queue<Card> hand;
@@ -20,6 +25,10 @@ public class WarHand implements Hand {
     this.hand = hand;
   }
 
+  /**
+   * addCard pushes the given Card onto the bottom of the hand
+   * @param toAdd
+   */
   public void addCard(Card toAdd) {
     hand.add(toAdd);
   }
@@ -28,6 +37,12 @@ public class WarHand implements Hand {
     return hand.isEmpty();
   }
 
+  /**
+   * removeCard pops the top card off of the hand and returns
+   * it. That card will no longer be in the hand.
+   * @return
+   *    the popped card
+   */
   public Card removeCard() {
     return hand.poll();
   }

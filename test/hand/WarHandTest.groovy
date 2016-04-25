@@ -19,7 +19,7 @@ class WarHandTest extends GroovyTestCase {
     void testAddCard() {
         toTest.addCard(card);
         assertEquals(true, queue.peek().suit  == card.suit &&
-                           queue.peek().value == card.value);
+                           queue.peek().rank == card.rank);
     }
 
     void testRemoveCard() {
@@ -30,10 +30,10 @@ class WarHandTest extends GroovyTestCase {
         toTest.addCard(other);
         removed = toTest.removeCard();
         assertEquals(true, removed.suit  == card.suit &&
-                           removed.value == card.value);
+                           removed.rank == card.rank);
         removed = toTest.removeCard();
         assertEquals(true, removed.suit  == other.suit &&
-                           removed.value == other.value);
+                           removed.rank == other.rank);
         assertEquals(true, queue.isEmpty());
     }
 
