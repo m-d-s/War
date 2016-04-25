@@ -15,16 +15,21 @@ public class WarHand implements Hand {
     hand = new LinkedList<>();
   }
 
+  /* for testing purposes */
+  public WarHand(Queue<Card> hand) {
+    this.hand = hand;
+  }
+
   public void addCard(Card toAdd) {
     hand.add(toAdd);
   }
 
-  public Card removeCard() {
-    return hand.poll();
-  }
-
   public boolean isEmpty() {
     return hand.isEmpty();
+  }
+
+  public Card removeCard() {
+    return hand.poll();
   }
 
   public int size() {

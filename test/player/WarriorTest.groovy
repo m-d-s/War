@@ -1,5 +1,5 @@
 import card.Card
-import deck.FrenchDeckNoJkrs
+import deck.CardDeck
 import hand.Hand
 import player.Warrior
 import deck.*
@@ -17,7 +17,7 @@ class WarriorTest extends GroovyTestCase {
     void setUp() {
         super.setUp()
         genghis  = new Warrior("genghis");
-        deck     = new FrenchDeckNoJkrs();
+        deck     = new CardDeck();
         hand     = genghis.getHand();
         topThree = new ArrayList<>();
 

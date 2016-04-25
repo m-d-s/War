@@ -5,13 +5,13 @@ import card.Card
 /**
  * Created by msimpson on 4/23/16.
  */
-class FrenchDeckNoJkrsTest extends GroovyTestCase {
+class CardDeckTest extends GroovyTestCase {
     ArrayList<Card> cards;
     Deck deck;
     void setUp() {
         super.setUp()
         this.cards = new ArrayList<>();
-        deck = new FrenchDeckNoJkrs(this.cards);
+        deck = new CardDeck(this.cards);
     }
 
     void testCreate() {
@@ -40,18 +40,6 @@ class FrenchDeckNoJkrsTest extends GroovyTestCase {
             }
         }
     }
-//   TODO: maybe leave it out, but explain
-//    void testShuffle() {
-//        ArrayList<Card> otherCards = new ArrayList<>();
-//
-//        this.deck.create(4,13);
-//
-//        for(Card card : this.cards) {
-//            otherCards.add(new Card(card.suit, card.value));
-//        }
-//        this.deck.shuffle();
-//
-//    }
 
     void testDeal() {
         this.deck.create(4,13);

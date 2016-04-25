@@ -15,26 +15,21 @@ public abstract class Player<T extends Player> {
     this.hand = hand;
   }
 
-  public Hand getHand() {
-    return this.hand;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public boolean hasCards() {
-    return !this.hand.isEmpty();
-  }
-
-  public int handSize() {
-    return this.hand.size();
-  }
-
   public void depleteHand() {
     while(!this.hand.isEmpty()) {
       this.hand.removeCard();
     }
   }
 
+  public Hand getHand() {
+    return this.hand;
+  }
+
+  public String getName() { return this.name; }
+
+  public int handSize() {
+    return this.hand.size();
+  }
+
+  public boolean hasCards() { return !this.hand.isEmpty(); }
 }

@@ -2,7 +2,6 @@ package player;
 
 import card.Card;
 import hand.WarHand;
-
 import java.util.ArrayList;
 
 /**
@@ -10,7 +9,6 @@ import java.util.ArrayList;
  * a player specifically for game War. It includes
  * structures and behaviors that are unique to a player of the
  * game of War.
- * Created by msimpson on 4/18/16.
  */
 public class Warrior extends Player<Warrior> {
 
@@ -22,6 +20,16 @@ public class Warrior extends Player<Warrior> {
    */
   public Warrior(String name) {
     super(name, new WarHand());
+  }
+
+  /**
+   * Adds a card to the hand with no side effects to
+   * the source of the card
+   * @param toAdd
+   *    the card to add to the hand
+   */
+  public void addCard(Card toAdd) {
+    this.hand.addCard(toAdd);
   }
 
   /**
@@ -42,15 +50,5 @@ public class Warrior extends Player<Warrior> {
     for(int i = 0; i < length; ++i) {
       this.hand.addCard(winnings.remove(0));
     }
-  }
-
-  /**
-   * Adds a card to the hand with no side effects to
-   * the source of the card
-   * @param toAdd
-   *    the card to add to the hand
-   */
-  public void addCard(Card toAdd) {
-    this.hand.addCard(toAdd);
   }
 }

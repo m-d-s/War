@@ -3,7 +3,7 @@ package game;
 
 import card.Card;
 import deck.Deck;
-import deck.FrenchDeckNoJkrs;
+import deck.CardDeck;
 import player.Warrior;
 import rand.Shuffle;
 
@@ -23,50 +23,56 @@ public class War implements GameType {
   private int numSuits;
   private int numRanks;
 
+  /* for testing purposes */
+  private final boolean doShuffle;
+  private final boolean outputOn;
+  /* for testing purposes */
+  private boolean[] winTracker;
+
+
   public War(int numberOfPlayers, int numberOfSuits, int numberOfRanks) {
+    this.doShuffle  = true;
+    this.winTracker = null;
+    this.outputOn   = false;
     this.numSuits   = numberOfSuits;
     this.numRanks   = numberOfRanks;
-    this.players    = new ArrayList<>();
+    this.deck       = new CardDeck();
     this.contenders = new ArrayList<>();
     this.jumbler    = Shuffle.getInstance();
-    this.deck       = new FrenchDeckNoJkrs();
 
+    this.initPlayers(numberOfPlayers);
     this.deck.create(numberOfSuits, numberOfRanks);
-    for(int i = 0; i < numberOfPlayers; ++i) {
-      this.players.add(new Warrior("Player " + i));
-    }
   }
 
   /* For testing purposes */
-  public War(ArrayList<Warrior> players, Deck deck, int numSuits, int numRanks) {
+  public War(Deck deck, int numPlayers, int numSuits, int numRanks, boolean doShuffle, boolean[] winTracker) {
     this.deck       = deck;
-    this.players    = players;
+    this.outputOn   = false;
     this.numSuits   = numSuits;
     this.numRanks   = numRanks;
+    this.doShuffle  = doShuffle;
+    this.winTracker = winTracker;
     this.contenders = new ArrayList<>();
     this.jumbler    = Shuffle.getInstance();
+
+    this.initPlayers(numPlayers);
   }
 
   public void play() {
-    boolean victory = false;
-    this.deck.shuffle();
+    String winner;
+    this.clearWinTable();
+    if(this.doShuffle) { this.deck.shuffle(); }
     this.deal();
-
-    while(!victory) {
-      this.addPlayersToContenders();
-      if(this.contenders.size() > 1) {
-        this.round();
-      } else {
-        victory = true;
-      }
-    }
-
-    if(contenders.isEmpty() && players.size() <= numSuits) {
+    this.gamePlay();
+    if(contenders.isEmpty()) {
       System.out.print("Game ended in a tie");
     } else {
-      System.out.println(contenders.get(0).getName() + " is the winner!");
+      winner = contenders.get(0).getName();
+      if(outputOn) { System.out.println(winner + " is the winner!"); }
+      if(winTracker != null) {
+        winTracker[Integer.parseInt(winner.replaceAll("\\D+",""))] = true;
+      }
     }
-
   }
 
   public void rematch() {
@@ -76,26 +82,43 @@ public class War implements GameType {
     for(Warrior player : players) {
       player.depleteHand();
     }
-    /* remove the winner of the last game */
-    this.contenders.remove(0);
     this.play();
   }
 
-  private void round() {
-    ArrayList<Card> loot = new ArrayList<>();
+  private void clearWinTable() {
+    int length;
+    boolean[] table = this.winTracker;
+    if(table != null) {
+      length = table.length;
+      for(int i = 0; i < length; i++) {
+        table[i] = false;
+      }
+    }
+  }
 
-    /* begin laying down cards */
-    this.flipAndCompare(loot);
-    /* a victor for the round has been declared */
-    jumbler.shuffle(loot);
-    this.contenders.get(0).placeAtBottom(loot);
+  private void deal() {
+    int which = 0;
+    int numPlayers = players.size();
+    int numCards = this.numRanks * this.numSuits;
+    /* loop through the deck adding cards to alternating hands */
+    for(int i = 0; i < numCards; ++i) {
+      which %= numPlayers;
+      this.players.get(which).addCard(this.deck.deal());
+      which++;
+    }
+  }
+
+  private void filterContenders() {
+    this.contenders = this.players.stream()
+                          .filter(player -> player.hasCards())
+                          .collect(Collectors.toCollection(ArrayList::new));
   }
 
   private void flipAndCompare(ArrayList<Card> loot) {
+    Card addToLoot;
     int value,
         max = -1,
         numContenders = this.contenders.size();
-    Card addToLoot;
 
     /* loop through the remaining contenders */
     for(int i = 0; i < numContenders; ++i) {
@@ -125,6 +148,38 @@ public class War implements GameType {
     }
   }
 
+  private void gamePlay() {
+    boolean victory = false;
+    while(!victory) {
+      this.filterContenders();
+      if(this.contenders.size() > 1) {
+        this.round();
+      } else {
+        victory = true;
+      }
+    }
+  }
+
+  private void initPlayers(int numPlayers) {
+    this.players = new ArrayList<>();
+    for(int i = 0; i < numPlayers; ++i) {
+      this.players.add(new Warrior("Player " + i));
+    }
+  }
+
+  private void round() {
+    ArrayList<Card> loot = new ArrayList<>();
+
+    /* begin laying down cards */
+    this.flipAndCompare(loot);
+    /* a victor for the round has been declared */
+    jumbler.shuffle(loot);
+    if(!this.contenders.isEmpty()) {
+      this.contenders.get(0).placeAtBottom(loot);
+    }
+
+  }
+
   private void war(ArrayList<Card> loot) {
     Warrior temp;
     int length = this.contenders.size();
@@ -146,23 +201,5 @@ public class War implements GameType {
     /* indirect recursion, all players without cards have been
      * removed from contenders at this point */
     this.flipAndCompare(loot);
-  }
-
-  private void deal() {
-    int which = 0;
-    int numPlayers = players.size();
-    int numCards = this.numRanks * this.numSuits;
-    /* loop through the deck adding cards to alternating hands */
-    for(int i = 0; i < numCards; ++i) {
-      which %= numPlayers;
-      this.players.get(which).addCard(this.deck.deal());
-      which++;
-    }
-  }
-
-  private void addPlayersToContenders() {
-    this.contenders = this.players.stream()
-                                  .filter(player -> player.hasCards())
-                                  .collect(Collectors.toCollection(ArrayList::new));
   }
 }

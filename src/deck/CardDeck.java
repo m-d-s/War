@@ -8,22 +8,22 @@ import java.util.ArrayList;
 /**
  * Created by msimpson on 4/23/16.
  */
-public class FrenchDeckNoJkrs implements Deck {
+public class CardDeck implements Deck {
   ArrayList<Card> deck;
   Shuffle jumbler;
   int pos;
 
-  public FrenchDeckNoJkrs() {
-    pos = 0;
-    deck = new ArrayList<>();
+  public CardDeck() {
+    pos     = 0;
+    deck    = new ArrayList<>();
     jumbler = Shuffle.getInstance();
   }
 
   /* for testing purposes*/
-  public FrenchDeckNoJkrs(ArrayList deck) {
-    this.pos = 0;
+  public CardDeck(ArrayList<Card> deck) {
+    this.pos  = 0;
     this.deck = deck;
-    jumbler = Shuffle.getInstance();
+    jumbler   = Shuffle.getInstance();
   }
 
   /* Create the deck of cards */
@@ -31,7 +31,8 @@ public class FrenchDeckNoJkrs implements Deck {
     int rank = 0,
         suit = 0,
         length = numberOfSuits * numberOfRanks;
-    depleteDeck();
+
+    this.depleteDeck();
     // generates one card of each suit per value
     for(int i = 0; i < length; ++i ) {
       this.deck.add(new Card(suit, rank));
@@ -41,11 +42,6 @@ public class FrenchDeckNoJkrs implements Deck {
         rank = 0;
       }
     }
-  }
-
-  /* Shuffle the deck */
-  public void shuffle() {
-    this.jumbler.shuffle(this.deck);
   }
 
   /* deal a card from the deck */
@@ -58,5 +54,10 @@ public class FrenchDeckNoJkrs implements Deck {
     while(!this.deck.isEmpty()) {
       this.deck.remove(0);
     }
+  }
+
+  /* Shuffle the deck */
+  public void shuffle() {
+    this.jumbler.shuffle(this.deck);
   }
 }
