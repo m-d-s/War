@@ -188,7 +188,7 @@ public class War implements GameType {
     for(int i = 0; i < length; ++i) {
       temp = this.contenders.get(i);
       /* each player must sacrifice three cards during a war */
-      for(int j = 0; j < 2; ++j) {
+      for(int j = 0; j < 3; ++j) {
         if(temp.hasCards()) { loot.add(temp.getTopCard()); }
       }
       /* if they player ran out of cards, they automatically lose

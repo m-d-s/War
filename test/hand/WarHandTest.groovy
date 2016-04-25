@@ -11,7 +11,7 @@ class WarHandTest extends GroovyTestCase {
 
     void setUp() {
         super.setUp()
-        card = new Card(0,1);
+        card = new Card(1,0);
         queue = new LinkedList<>();
         toTest = new WarHand(queue);
     }
@@ -24,7 +24,7 @@ class WarHandTest extends GroovyTestCase {
 
     void testRemoveCard() {
         Card removed,
-             other = new Card(1,0);
+             other = new Card(0,1);
 
         toTest.addCard(card);
         toTest.addCard(other);

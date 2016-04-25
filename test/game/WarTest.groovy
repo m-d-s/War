@@ -7,19 +7,12 @@ import deck.CardDeck;
  */
 class WarTest extends GroovyTestCase {
     GameType warTest;
-    boolean[] winTracker;
-
-    void setUp() {
-        super.setUp()
-    }
+    boolean[] winTable;
 
     void testPlay() {
         expectedPlayerWins();
+        explicitWarScenario();
         statisticalTest();
-    }
-
-    void testRematch() {
-
     }
 
     void expectedPlayerWins() {
@@ -29,13 +22,13 @@ class WarTest extends GroovyTestCase {
             winner;
 
         for(int i = 0; i < 100; ++i) {
-            winTracker = new boolean[numPlayers];
+            winTable = new boolean[numPlayers];
             rigged = new ArrayList<>();
             numCards = numPlayers * 10;
             for(int j  = 0; j < numCards; j++) {
-                rigged.add(new Card(j % numPlayers , 0))
+                rigged.add(new Card(0 ,j % numPlayers))
             }
-            warTest = new War(new CardDeck(rigged), numPlayers, numCards, 1, false, winTracker);
+            warTest = new War(new CardDeck(rigged), numPlayers, numCards, 1, false, winTable);
             warTest.play();
             winner = this.idWinner();
             assertEquals(true, winner == numPlayers - 1);
@@ -44,33 +37,54 @@ class WarTest extends GroovyTestCase {
 
     }
 
+    void explicitWarScenario() {
+        ArrayList<Card> rigged = new ArrayList<>();
+        for(int i = 0; i < 8; ++i) {
+            rigged.add(new Card(0,0));
+        }
+        rigged.add(new Card(0,1));
+        rigged.add(new Card(0,0));
+        this.winTable = new boolean[2]
+        warTest = new War(new CardDeck(rigged), 2, 10, 1, false, winTable);
+        warTest.play();
+        assertEquals(true, 0 == this.idWinner());
+    }
+
     void statisticalTest() {
         int[] winCounts = new int[4];
         float proportion;
-        GameType thousandYearsWar;
-        int totalRematches = 100000;
+        int winner,
+            tieCount = 0,
+            totalRematches = 100000;
         CardDeck deck = new CardDeck();
         deck.create(4,13)
-        this.winTracker = new boolean[4];
-        thousandYearsWar = new War(deck, 4, 4, 13, true, winTracker);
+        this.winTable = new boolean[4];
+        this.warTest = new War(deck, 4, 4, 13, true, winTable);
         for(int i = 0; i < 4; ++i) {
             winCounts[i] = 0;
         }
-        thousandYearsWar.play();
+        this.warTest.play();
         winCounts[this.idWinner()]++;
         for(int i = 0; i < totalRematches; ++i) {
-            thousandYearsWar.rematch();
-            winCounts[this.idWinner()]++;
+            this.warTest.rematch();
+            winner = this.idWinner();
+            if (winner >= 0) {
+                winCounts[winner]++;
+            } else {
+                tieCount++;
+            }
         }
         for(int i = 0; i < 4; ++i) {
             proportion = (float) winCounts[i] / totalRematches;
             assertEquals(true, proportion > 0.245 && proportion < 0.255);
         }
+        proportion = (float) tieCount / totalRematches;
+        assertEquals(true, proportion < 0.00001);
 
     }
 
     int idWinner() {
-        boolean[] tracker = this.winTracker;
+        boolean[] tracker = this.winTable;
         int length = tracker.length;
         for(int i = 0; i < length; ++i) {
             if(tracker[i]) {

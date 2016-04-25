@@ -35,7 +35,7 @@ public class CardDeck implements Deck {
     this.depleteDeck();
     // generates one card of each suit per value
     for(int i = 0; i < length; ++i ) {
-      this.deck.add(new Card(suit, rank));
+      this.deck.add(new Card(rank, suit));
       // if all cards of a given suit have been created
       if(++rank == numberOfSuits) {
         suit++;
