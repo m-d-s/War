@@ -17,7 +17,7 @@ public class Main {
         new BufferedReader(new InputStreamReader(System.in));
     war = new War();
     while(playAgain) {
-      war.play(-2,4,13);
+      war.play(2,4,13);
       System.out.println("Would you like to play again? (y/n)");
       try{
         playAgain = br.readLine().toLowerCase().equals("y");

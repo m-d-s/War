@@ -6,7 +6,7 @@ import hand.Hand;
  * Player is an abstract class that defines the essential
  * attributes and behaviors of a card player
  */
-public abstract class Player<T extends Player> {
+public abstract class Player {
   private String name;
   protected Hand hand;
 

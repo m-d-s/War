@@ -9,7 +9,8 @@ import java.util.Random;
 /**
  * Shuffle is a class that offers singleton access to
  * a random number generator for the purposes of shuffling
- * lists of cards
+ * lists of cards. Instance access is granted through the
+ * getInstance static method.
  */
 public class Shuffle {
 

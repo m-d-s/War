@@ -28,6 +28,7 @@ public class WarHand implements Hand {
   /**
    * addCard pushes the given Card onto the bottom of the hand
    * @param toAdd
+   *    card to be added
    */
   public void addCard(Card toAdd) {
     hand.add(toAdd);

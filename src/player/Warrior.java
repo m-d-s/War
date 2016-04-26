@@ -10,8 +10,7 @@ import java.util.ArrayList;
  * structures and behaviors that are unique to a player of the
  * game of War.
  */
-public class Warrior extends Player<Warrior> {
-
+public class Warrior extends Player {
   /**
    * Constructor passes an instance of WarHand to the Player class
    * allowing for hand behavior that is specific to the game of War.
