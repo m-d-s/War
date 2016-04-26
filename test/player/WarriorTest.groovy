@@ -5,7 +5,7 @@ import player.Warrior
 import deck.*
 
 /**
- * Created by msimpson on 4/20/16.
+ * Testing of the Warrior class
  */
 class WarriorTest extends GroovyTestCase {
     Hand hand;
