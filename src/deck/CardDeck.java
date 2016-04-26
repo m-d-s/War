@@ -9,21 +9,22 @@ import java.util.ArrayList;
  * CardDeck defines a collection of Card objects with a specified interface.
  */
 public class CardDeck implements Deck {
-  ArrayList<Card> deck;
-  Shuffle jumbler;
   int pos;
+  Shuffle jumbler;
+  ArrayList<Card> deck;
+
 
   public CardDeck() {
-    pos     = 0;
-    deck    = new ArrayList<>();
-    jumbler = Shuffle.getInstance();
+    this.pos     = 0;
+    this.deck    = new ArrayList<>();
+    this.jumbler = Shuffle.getInstance();
   }
 
   /* for testing purposes*/
   public CardDeck(ArrayList<Card> deck) {
-    this.pos  = 0;
-    this.deck = deck;
-    jumbler   = Shuffle.getInstance();
+    this.pos     = 0;
+    this.deck    = deck;
+    this.jumbler = Shuffle.getInstance();
   }
 
   /**
@@ -52,6 +53,7 @@ public class CardDeck implements Deck {
 
   /**
    *  deal a card from the deck
+   *  the card remains in the deck
    */
   public Card deal() {
     /* pos cycles through the deck*/

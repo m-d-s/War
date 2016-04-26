@@ -5,7 +5,8 @@ import java.util.Scanner;
 
 
 /**
- * Validator is meant to contain utility methods for input validation
+ * Validator is meant to contain utility methods for input validation.
+ * This could be expanded much further for upper bounds validation.
  */
 public class Validator {
   /**
@@ -19,9 +20,10 @@ public class Validator {
    *    a positive integer
    */
   public static int positiveDigit(int toCheck, String message) {
-    Scanner input = new Scanner(System.in);
+    Scanner input;
     boolean again;
     if (toCheck < 1) {
+     input = new Scanner(System.in);
       do {
         System.out.print(message);
         try {

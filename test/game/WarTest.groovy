@@ -52,8 +52,8 @@ class WarTest extends GroovyTestCase {
                 rigged.add(toAdd)
             }
             /* shuffle turned off, fed rigged deck */
-            warTest = new War(new CardDeck(rigged), numPlayers, numCards, 1, false, winTable);
-            warTest.play();
+            warTest = new War(new CardDeck(rigged), false, false, winTable);
+            warTest.play(numPlayers, numCards, 1);
             winner = this.idWinner();
             assertEquals(true, winner == projectedWinner);
             numPlayers++;
@@ -70,8 +70,8 @@ class WarTest extends GroovyTestCase {
         rigged.add(new Card(0, 0));
         rigged.add(new Card(0, 0));
         this.winTable = new boolean[2]
-        this.warTest = new War(new CardDeck(rigged), 2, 2, 1, false, this.winTable);
-        this.warTest.play();
+        this.warTest = new War(new CardDeck(rigged), false, false, this.winTable);
+        this.warTest.play(2, 2, 1);
         assertEquals(true, -1 == this.idWinner());
     }
 
@@ -87,8 +87,8 @@ class WarTest extends GroovyTestCase {
         rigged.add(new Card(0,1));
         rigged.add(new Card(0,0));
         this.winTable = new boolean[2]
-        warTest = new War(new CardDeck(rigged), 2, 10, 1, false, winTable);
-        warTest.play();
+        warTest = new War(new CardDeck(rigged), false, false, winTable);
+        warTest.play(2, 10, 1);
         assertEquals(true, 0 == this.idWinner());
     }
 
@@ -100,22 +100,23 @@ class WarTest extends GroovyTestCase {
      * player. The results are then asserted to a tolerance of one percent.
      */
     void statisticalTest() {
-        int[] winCounts = new int[4];
-        float proportion;
         int winner,
             tieCount = 0,
             totalRematches = 100000;
+        float proportion;
+        int[] winCounts = new int[4];
         CardDeck deck = new CardDeck();
+
         deck.create(4,13)
         this.winTable = new boolean[4];
-        this.warTest = new War(deck, 4, 4, 13, true, winTable);
+        this.warTest = new War(deck, true, true, winTable);
+        /* initialize the counter */
         for(int i = 0; i < 4; ++i) {
             winCounts[i] = 0;
         }
-        this.warTest.play();
-        winCounts[this.idWinner()]++;
+        /* */
         for(int i = 0; i < totalRematches; ++i) {
-            this.warTest.rematch();
+            this.warTest.play(4, 4, 13);
             winner = this.idWinner();
 
             if (winner >= 0) {
@@ -124,14 +125,14 @@ class WarTest extends GroovyTestCase {
                 tieCount++;
             }
         }
-        System.out.println("Win proportions over the course of " + totalRematches + " games:")
+        System.out.println("\n\nWin proportions over the course of " + totalRematches + " games:\n")
         for(int i = 0; i < 4; ++i) {
             proportion = (float) winCounts[i] / totalRematches;
-            System.out.println("Player " + i + "'s win proportion: " + proportion)
+            System.out.println("\tPlayer " + i + ": "+ proportion)
             assertEquals(true, proportion > 0.245 && proportion < 0.255);
         }
         proportion = (float) tieCount / totalRematches;
-        System.out.println("A proportion of " + proportion + " ties occurred.");
+        System.out.println("\tTies    : " + proportion + "");
     }
 
     /**

@@ -1,1 +1,3 @@
-War Card Game 
+# War
+## Author: Michael Simpson
+

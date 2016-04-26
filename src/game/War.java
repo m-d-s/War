@@ -19,6 +19,7 @@ public class War implements GameType {
   private Deck deck;
   private int numSuits;
   private int numRanks;
+  private int numPlayers;
   private Shuffle jumbler;
   private ArrayList<Warrior> players;
   private ArrayList<Warrior> contenders;
@@ -29,34 +30,29 @@ public class War implements GameType {
   private final boolean outputOn;
   /* for testing purposes */
   private final boolean doShuffle;
+  /* for testing puropses */
+  private final boolean doCreateDeck;
 
-  public War(int numPlayers, int numSuits, int numRanks) {
-    this.doShuffle  = true;
-    this.winTracker = null;
-    this.outputOn   = true;
-    this.deck       = new CardDeck();
-    this.contenders = new ArrayList<>();
-    this.jumbler    = Shuffle.getInstance();
-    this.numSuits   = Validator.positiveDigit(numSuits,
-                                              "Please enter a positive integer value for the number of suits");
-    this.numRanks   = Validator.positiveDigit(numRanks,
-                                              "Please enter a positive integer value for the number of ranks");
-    this.initPlayers( Validator.positiveDigit(numPlayers,
-                                              "Please enter a positive integer value for the number of players"));
+  public War() {
+    this.outputOn     = true;
+    this.doShuffle    = true;
+    this.winTracker   = null;
+    this.doCreateDeck = true;
+    this.deck         = new CardDeck();
+    this.contenders   = new ArrayList<>();
+    this.jumbler      = Shuffle.getInstance();
     this.deck.create(this.numSuits, this.numRanks);
   }
 
   /* for testing purposes */
-  public War(Deck deck, int numPlayers, int numSuits, int numRanks, boolean doShuffle, boolean[] winTracker) {
-    this.deck       = deck;
-    this.outputOn   = false;
-    this.numSuits   = numSuits;
-    this.numRanks   = numRanks;
-    this.doShuffle  = doShuffle;
-    this.winTracker = winTracker;
-    this.contenders = new ArrayList<>();
-    this.jumbler    = Shuffle.getInstance();
-
+  public War(Deck deck, boolean doShuffle, boolean doCreate, boolean[] winTracker) {
+    this.deck         = deck;
+    this.outputOn     = false;
+    this.doCreateDeck = doCreate;
+    this.doShuffle    = doShuffle;
+    this.winTracker   = winTracker;
+    this.contenders   = new ArrayList<>();
+    this.jumbler      = Shuffle.getInstance();
     this.initPlayers(numPlayers);
   }
 
@@ -64,14 +60,16 @@ public class War implements GameType {
    * play gets called once to play the first game, after that all subsequent games must
    * be played through rematch
    */
-  public void play() {
+  public void play(int numPlayers, int numSuits, int numRanks) {
     String winner;
+    /* configuration and housecleaning */
+    this.config(numPlayers, numSuits, numRanks);
     this.clearWinTable();
-    if(this.doShuffle) { this.deck.shuffle(); }
-    this.deal();
+
+
     this.gamePlay();
     if(this.contenders.isEmpty()) {
-      if(this.outputOn) { System.out.print("Game ended in a tie"); }
+      if(this.outputOn) { System.out.println("Game ended in a tie"); }
     } else {
       winner = this.contenders.get(0).getName();
       if(this.outputOn) { System.out.println(winner + " is the winner!"); }
@@ -79,21 +77,27 @@ public class War implements GameType {
         this.winTracker[Integer.parseInt(winner.replaceAll("\\D+",""))] = true;
       }
     }
-  }
-
-  /**
-   * rematch can be called to play any number of matches after the initial call to play.
-   * It resets the game to a known starting state with all player hands empty, and
-   * the player list completely rotated by one position.
-   */
-  public void rematch() {
-    /* rotate players to cycle first dealt */
+    /* In preparation of another round, rotate players to cycle first dealt */
     Collections.rotate(players,1);
     /* remove all cards from players hands */
     for(Warrior player : players) {
       player.depleteHand();
     }
-    this.play();
+  }
+
+  private void config(int numPlayers, int numSuits, int numRanks) {
+    if(numPlayers != this.numPlayers) {
+      this.numPlayers = Validator.positiveDigit(numPlayers,
+                                                "Please enter a positive integer value for the number of players");
+      this.initPlayers(this.numPlayers);
+    }
+    if(numSuits != this.numSuits || numRanks != this.numSuits) {
+      this.numSuits   = Validator.positiveDigit(numSuits,
+          "Please enter a positive integer value for the number of suits");
+      this.numRanks   = Validator.positiveDigit(numRanks,
+          "Please enter a positive integer value for the number of ranks");
+      if(this.doCreateDeck) { this.deck.create(this.numSuits, this.numRanks); }
+    }
   }
 
   /**
@@ -129,6 +133,9 @@ public class War implements GameType {
     }
   }
 
+  /**
+   *
+   */
   private void filterContenders() {
     this.contenders = this.players.stream()
                           .filter(player -> player.hasCards())
@@ -143,6 +150,7 @@ public class War implements GameType {
    * indirectly recurse back. This method assumes that all players within
    * the contenders list have at least one card
    * @param loot
+   *    list of card that gets awarded to the round winner
    */
   private void flipAndCompare(ArrayList<Card> loot) {
     Card addToLoot;
@@ -185,6 +193,10 @@ public class War implements GameType {
    */
   private void gamePlay() {
     boolean victory = false;
+    /* shuffle and deal */
+    if(this.doShuffle) { this.deck.shuffle(); }
+    this.deal();
+
     while(!victory) {
       this.filterContenders();
       if(this.contenders.size() > 1) {
@@ -203,6 +215,7 @@ public class War implements GameType {
    */
   private void initPlayers(int numPlayers) {
     ArrayList<Warrior> players = new ArrayList<>();
+
     for(int i = 0; i < numPlayers; ++i) {
       players.add(new Warrior("Player " + i));
     }
@@ -231,6 +244,7 @@ public class War implements GameType {
    * loot. If any player has no cards left as a result, they are ejected
    * from the contenders. Finally, a call is made back to flipAndCompare
    * @param loot
+   *    the list of cards awarded to the round winner
    */
   private void war(ArrayList<Card> loot) {
     Warrior temp;

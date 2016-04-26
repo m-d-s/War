@@ -1,6 +1,5 @@
 package game;
 
 public interface GameType {
-  void play();
-  void rematch();
+  void play(int numPlayers, int numSuits, int numRanks);
 }
