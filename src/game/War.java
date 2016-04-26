@@ -134,7 +134,7 @@ public class War implements GameType {
   }
 
   /**
-   *
+   * filter out the contenders that do not have any cards left in their hand
    */
   private void filterContenders() {
     this.contenders = this.players.stream()
