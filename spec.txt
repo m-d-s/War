@@ -1,0 +1,45 @@
+Consider the following items when completing the below code sample:
+
+* Best Practices
+
+* TDD
+
+* Unit Tests
+
+* Input Validation
+--------------------------------
+Card Game War
+
+1. Design a class to represent a playing card.
+
+public class Card {
+
+}
+
+2. Using the Card class above, create an implementation of the following interface.
+
+public interface Deck {
+
+    /* Create the deck of cards */
+
+    public void create( int numberOfSuits, int numberOfRanks );
+
+    /* Shuffle the deck */
+
+    public void shuffle();
+
+    /* deal a card from the deck */
+
+    public Card deal();
+
+}
+
+3. Using the CardDeck create a driver program that plays the card game War.
+
+http://en.wikipedia.org/wiki/War_(card_game)
+
+public class War {
+
+    public void play( int numberOfSuits, int numberOfRanks, int numberOfPlayers ) { }
+
+}
